@@ -1,0 +1,122 @@
+#!/bin/bash
+
+input="$1"
+if [ ! -f "$input" ]; then
+    exit 84
+fi
+if [ -f "Makefile" ]; then
+    rm Makefile
+fi
+declare -i i=0
+declare -a files
+touch Makefile
+touch programs
+printf '##\n## EPITECH PROJECT, 2020\n## automakefile\n## File description:\n##\n##\n\n' >> Makefile
+IFS=$'\n'
+for line in `cat $1`
+do
+    name="${line%;*}"
+    name2="${line#*;}"
+    if [ $name = "EXEC" ]; then
+        touch EXEC_here
+        printf "EXEC\t=\t" >> Makefile
+        echo "./$name2" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ $name = "PROJECT_DIR" ]; then
+        printf "PROJECT_DIR\t=\t" >> Makefile
+        echo "$name2" >> Makefile
+        printf "\n" >> Makefile
+        PROJECT_DIR="$name2"
+    fi
+    if [ $name = "CC" ]; then
+        printf "CC\t=\t" >> Makefile
+        echo "$name2" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ $name = "SOURCES_DIR" ]; then
+        printf "SOURCES_DIR\t=\t" >> Makefile
+        echo "$name2/" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ $name = "CFLAGS" ]; then
+        printf "CFLAGS\t=\t" >> Makefile
+        echo "$name2" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ $name = "HEADERS_DIR" ]; then
+        printf "HEADERS_DIR\t=\t" >> Makefile
+        echo "$name2" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ $name = "LIBS_DIR" ]; then
+        printf "LIBS_DIR\t=\t" >> Makefile
+        echo "$name2" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ $name = "BCK_DIR" ]; then
+        printf "BCK_DIR\t=\t" >> Makefile
+        echo "$name2" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ $name = "ZIP" ]; then
+        printf "ZIP\t=\t" >> Makefile
+        echo "$name2" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ $name = "ZIPFLAGS" ]; then
+        printf "ZIPFLAGS\t=\t" >> Makefile
+        echo "$name2" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ $name = "UNZIP" ]; then
+        printf "UNZIP\t=\t" >> Makefile
+        echo "$name2" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ $name = "UNZIPFLAGS" ]; then
+        printf "UNZIPFLAGS\t=\t" >> Makefile
+        echo "$name2" >> Makefile
+        printf "\n" >> Makefile
+    fi
+    if [ ${name: -2} == ".c" ]; then
+        files="$name"
+        echo "$files" >> programs
+    fi
+done < "$input"
+if [ ! -s "programs" ]; then
+    rm Makefile
+    exit 7
+fi
+printf 'SRC\t=\t' >> Makefile
+for line in `cat programs`
+do
+    name="${line}"
+    printf "%s\t\\" "$name" >> Makefile
+    printf '\n\t' >> Makefile
+done < programs
+rm programs
+if [ -f "0" ]; then
+    rm 0
+fi
+printf '\n' >> Makefile
+printf 'OBJ\t=\t$(SRC:.c=.o)\n\n' >> Makefile
+printf 'all:\t$(NAME)\n\t' >> Makefile
+printf '$(NAME):\t$(OBJ)\n' >> Makefile
+printf '\t$(CC) -o ' >> Makefile
+if [ -f "EXEC_here" ]; then
+    printf '$(EXEC)' >> Makefile
+    rm EXEC_here
+else
+    printf 'a.out' >> Makefile
+fi
+printf ' $(NAME) $(SRC)\n\n' >> Makefile
+printf 'clean:\n\trm -rf $(OBJ)\n' >> Makefile
+printf '\trm -rf $(EXEC)\n' >> Makefile
+printf '\trm -rf *~\n\trm -rf *#\n\n' >> Makefile
+printf 'fclean:\tclean\n\n' >> Makefile
+printf 're:\tfclean\tall\n\n' >> Makefile
+printf '.PHONY:\tall clean fclean re' >> Makefile
+cp Makefile $PROJECT_DIR
+rm Makefile
+exit 0
